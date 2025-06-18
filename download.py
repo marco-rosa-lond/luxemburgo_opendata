@@ -31,31 +31,33 @@ def download_all_files(resources, destination_folder):
 
 
 
-for resource, filename_prefix in datasets.items():
+def get_monthly_xlsx_files():
 
-    fPattern = fr'^{filename_prefix}_\d{{6}}\.xlsx$'
+    for resource, filename_prefix in datasets.items():
 
-    destination_folder = 'Data/{}/'.format(filename_prefix)
-    os.makedirs(destination_folder, exist_ok=True)
+        fPattern = fr'^{filename_prefix}_\d{{6}}\.xlsx$'
 
-
-    r = requests.get('{}/datasets/{}/'.format(API, resource))
-    r.raise_for_status()
-
-    resources = r.json()['resources']
-    resources = list(filter(lambda x: re.search(fPattern, x['title']), resources))
-    resources.sort(key=lambda x: x['published'], reverse=True)
+        destination_folder = 'Data/{}/'.format(filename_prefix)
+        os.makedirs(destination_folder, exist_ok=True)
 
 
+        r = requests.get('{}/datasets/{}/'.format(API, resource))
+        r.raise_for_status()
 
-    # print('files available in the dataset with id "{}" and matching the pattern /{}/:'.format(resource, fPattern))
-    # print(list(map(lambda x: x['title'], resources)))
-
-    if not resources:
-        raise Exception('No resources found')
+        resources = r.json()['resources']
+        resources = list(filter(lambda x: re.search(fPattern, x['title']), resources))
+        resources.sort(key=lambda x: x['published'], reverse=True)
 
 
-    download_all_files(resources, destination_folder)
+
+        # print('files available in the dataset with id "{}" and matching the pattern /{}/:'.format(resource, fPattern))
+        # print(list(map(lambda x: x['title'], resources)))
+
+        if not resources:
+            raise Exception('No resources found')
+
+
+        download_all_files(resources, destination_folder)
 
 
 

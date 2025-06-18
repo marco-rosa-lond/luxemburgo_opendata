@@ -4,8 +4,6 @@ import re
 import pandas as pd
 from sqlalchemy import create_engine
 
-
-
 #
 # # DB Connection
 # server = 'YOUR_SERVER_NAME'
@@ -45,65 +43,44 @@ def get_file_date_string(filename):
 
 
 
-
 def get_all_files_in_directory(directory_path):
 
     files = [f for f in os.listdir(directory_path) if
              os.path.isfile(os.path.join(directory_path, f))]
-    return files
+
+    return sorted(files, reverse=True)
 
 
 
 
 
-def insert_operations_delta( folder = r'Data/Operations_Delta/'):
-
+def insert_files_to_sql(folder, table):
     files = get_all_files_in_directory(folder)
-    table = 'Operations_Delta'
 
     for filename in files:
-        print(f'File name: {filename}')
+        print(f'Processing file: {filename}')
         file_year, file_month = get_file_date_string(filename)
 
-
-        # Read Excel
         filepath = os.path.join(folder, filename)
-        df = pd.read_excel(filepath, engine='openpyxl')
+        df = pd.read_excel(filepath, engine='openpyxl', dtype=str)
+
+        if df.empty:
+            print(f"Warning: {filename} is empty. Skipping.")
+            raise Exception('No resources found')
 
         df['file_name'] = filename
         df['file_year'] = file_year
         df['file_month'] = file_month
 
-        # Insert into SQL Server
-        df.to_sql(table, con=engine, if_exists='append', index=False)
+
+        print(df.columns)
+
+        # df.to_sql(table, con=engine, if_exists='append', index=False)
+
+
         print(f"{len(df)} rows inserted into {table} table.")
 
 
 
 
 
-def insert_parc_automobile( folder = r'Data/parc_automobile/'):
-
-    files = get_all_files_in_directory(folder)
-    table = 'parc_automobile'
-
-    for filename in files:
-        print(f'File name: {filename}')
-        file_year, file_month = get_file_date_string(filename)
-
-
-        # Read Excel
-        filepath = os.path.join(folder, filename)
-        df = pd.read_excel(filepath, engine='openpyxl')
-
-        df['file_name'] = filename
-        df['file_year'] = file_year
-        df['file_month'] = file_month
-
-        # Insert into SQL Server
-        df.to_sql(table, con=engine, if_exists='append', index=False)
-        print(f"{len(df)} rows inserted into {table} table.")
-
-
-
-insert_operations_delta()
