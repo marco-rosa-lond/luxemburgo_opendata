@@ -1,15 +1,10 @@
-
-
 import requests, os.path, re
 import time
-from config import API, datasets
+from opendata import API, datasets, column_mapping_path
 import pandas as pd
 from io import BytesIO
 import python_calamine
-# from python_calamine.pandas import pandas_monkeypatch
 from pandas import read_excel
-
-COLUMN_MAPING_PATH = 'column_mapping.csv'
 
 
 def time_it_took(start_time:float, action:str):
@@ -17,7 +12,7 @@ def time_it_took(start_time:float, action:str):
     print(f"{action} took {end - start_time:.2f} seconds")
 
 
-def get_column_mapping(mapping_file = COLUMN_MAPING_PATH):
+def get_column_mapping(mapping_file = column_mapping_path):
     return pd.read_csv(mapping_file)
 
 

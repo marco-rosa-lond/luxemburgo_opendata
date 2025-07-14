@@ -1,19 +1,38 @@
 import csv
 import os
 import shutil
-
 import pandas as pd
 from sqlalchemy import create_engine, text
-from dateutil.parser import parse
-from config import connection_string, datasets, database
+from opendata import datasets
 import re
+
+server = os.getenv('DB_SERVER')
+username = os.getenv('DB_USER')
+password = os.getenv('DB_PASS')
+database = os.getenv('DB_NAME')
+driver = "ODBC+Driver+17+for+SQL+Server"
+
+
+if server == 'localhost':
+    # Windows Auth on localhost
+    connection_string = (
+        f"mssql+pyodbc://@{server}/{database}"
+        f"?driver={driver}&trusted_connection=yes"
+    )
+else:
+    # SQL Auth on remote
+    connection_string = (
+        f"mssql+pyodbc://{username}:{password}@{server}/{database}"
+        f"?driver={driver}"
+    )
+
 
 engine = create_engine(connection_string,
     fast_executemany=True)
 
 connection = engine.connect()
 
-LINHAS_POR_CHUNK = 1000000
+LINHAS_POR_CHUNK = 800000
 DIRETORIO_DBO = 'DBO'
 
 
@@ -33,14 +52,11 @@ pandas_to_sql = {
 def convert_to_proper_types(df):
 
     for col, dtype in df.dtypes.items():
-
         if 'date' in col:
             df[col] = pd.to_datetime(df[col].dropna(), format= "%Y%m%d",  errors='coerce')
             df[col] = df[col].dt.strftime('%Y-%m-%d')
-
         if 'code' in col:
             df[col] = df[col].astype('string')
-
     return df
 
 
@@ -59,8 +75,7 @@ def generate_create_table(df: pd.DataFrame, nome_tabela: str) -> str:
 
         if sql_type == f'VARCHAR({max_len})':
             if df[col].apply(lambda x: any(ord(c) > 127 for c in str(x))).any():
-                # print(f'{col}: with unicode characters')
-                sql_type =   f'NVARCHAR({max_len})'
+                sql_type = f'NVARCHAR({max_len})'
 
         sql_column_defs.append(f"[{col}] {sql_type}")
 
@@ -69,7 +84,7 @@ def generate_create_table(df: pd.DataFrame, nome_tabela: str) -> str:
     return f"CREATE TABLE [{nome_tabela}] (\n    {colunas_sql_str}\n);"
 
 
-def drop_sql_table(table_name: str) -> str:
+def drop_sql_table(table_name: str):
 
     connection.execute(text(f"DROP TABLE IF EXISTS {table_name}"))
     connection.commit()
@@ -85,14 +100,11 @@ def create_sql_table(df: pd.DataFrame, table_name: str):
     connection.commit()
 
 
-
 def get_all_csv_files_in_directory(directory_path):
     files = [f for f in os.listdir(directory_path) if
              os.path.isfile(os.path.join(directory_path, f))  and f.lower().endswith('.csv')]
 
     return sorted(files, reverse=True)
-
-
 
 def import_bcp(file, table_name):
 
@@ -148,11 +160,13 @@ def import_bcp(file, table_name):
 
 def import_to_table(df, table_name, max_rows = LINHAS_POR_CHUNK):
 
+    df = df.convert_dtypes()
+    df.columns = df.columns.str.strip().dropna()
+    df = convert_to_proper_types(df)
+
     drop_sql_table(table_name)
     create_sql_table(df, table_name)
     print("Created table {}".format(table_name))
-
-    max_rows = 800000
 
 
     # se o dataset > max_rows cria chunks
@@ -204,19 +218,11 @@ def update_database():
 
             for i, file in enumerate(sorted(csv_files)):
                 file_path = folder_path + file
-
                 file_df = pd.read_csv(file_path, sep='|',  encoding='utf-8')
                 file_df['file_name'] = file
-
                 combined = pd.concat([combined, file_df], ignore_index=True)
 
-
-            df = combined.convert_dtypes()
-            df.columns = df.columns.str.strip().dropna()
-            df = convert_to_proper_types(df)
-
-            import_to_table(df, table_name)
-
+            import_to_table(combined, table_name)
 
 
         if str.upper(dataset) == 'PARC_AUTOMOBILE':
@@ -224,12 +230,7 @@ def update_database():
             for file in csv_files:
                 table_name = file.replace('.csv', '')
                 file_path = folder_path + file
-
                 df = pd.read_csv(file_path, sep='|', encoding='utf-8')
-
-                df = df.convert_dtypes()
-                df.columns = df.columns.str.strip().dropna()
-                df = convert_to_proper_types(df)
 
                 import_to_table(df, table_name)
 
