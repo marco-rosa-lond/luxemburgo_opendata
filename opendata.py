@@ -1,6 +1,4 @@
 
-
-# API
 # [API]
 API = 'https://data.public.lu/api/1'
 
@@ -11,19 +9,5 @@ datasets = {
 }
 
 column_mapping_path = 'column_mapping.json'
-
-# SQL config
-# [database]
-server = 'localhost'
-database = 'LUX_TEST'
-
-connection_string = (
-    f"mssql+pyodbc://@{server}/{database}"
-    "?driver=ODBC+Driver+17+for+SQL+Server"
-    "&trusted_connection=yes"
-)
-
-
-
 
 
