@@ -1,13 +1,25 @@
 
-from db import insert_files_to_sql
-from download import get_monthly_xlsx_files
+from download import get_monthly_files
+from bulk_insert import update_database
 
 
 def main():
-    get_monthly_xlsx_files()
-    insert_files_to_sql(r'Data/Operations_Delta/', 'Operations_Delta_Staging_Table')
-    insert_files_to_sql(r'Data/Parc_Automobile/', 'Parc_Automobile_Staging_Table')
+
+    # Step 1 - download files
+    get_monthly_files()
+
+    # Step 2 - update database
+    update_database()
+
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+        print('Done')
+    except Exception as e:
+        print("An error occurred:",
+              e)
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to exit...")

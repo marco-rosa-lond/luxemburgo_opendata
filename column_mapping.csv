@@ -1,0 +1,62 @@
+﻿original_name,Description (FR),Description (EN),new_name,type
+CODEOP,Code Opération,Operation Code,CODEOP,string
+CATSTC,Code Catégorie Nationale,National Category Code,national_category_code,string
+CODCAR,Code Carrosserie Européen,European Bodywork Code,european_bodywork_code,string
+LIBCAR,Libellé Carrosserie,Bodywork wording,bodywork_wording,string
+CATEU,Code Catégorie Européenne,European Category Code,european_category_code,string
+COUL,Couleur,Color,color,string
+INDUTI,Indication d'utilisation,Indication of use,indication_of_use,string
+PAYPVN,Code du pays de provenance,Country of origin code,country_of_origin_code,string
+CODMRQ,Code marque,Manufacturer Code,manufacturer_code,string
+LIBMRQ,Libellé marque,Manufacturer wording,manufacturer_wording,string
+TYPUSI,Type usine,Type,type,string
+TYPCOM,Désignation commerciale,Commercial name,commercial_name,string
+PVRNUM,Numéro PVR,EC type approval number,ec_type_approval_number,string
+PVRVAR,Variante PVR,Variant,variant,string
+PVRVER,Version PVR,Version,version,string
+DATCIRPRM,Date de première mise en circulation,Date of first registration,date_first_registration,string
+DATCIR_GD,Date de première mise en circulation au Luxembourg,Date of first registration in Luxembourg,date_first_registration_luxembourg,string
+DATCIR,Date de mise en circulation par le propriétaire,Date of the registration to which this certificate refers,date_registration_certificate_refers,string
+DATHORCIR,Date de mise hors circulation,Off road declaration date,off_road_declaration_date,string
+MVID,Masse à vide,Mass in running order,mass_running_order,int
+MMA,Masse maximale autorisée,Technically permissible maximum laden mass,max_laden_mass,int
+MMAENS,MMA ensemble,Technically permissible maximum mass of the combination,max_mass_combination,int
+MMAATT,MMA point d'attelage,Technically permissible max. static vertical mass at coupling point,max_vertical_mass_coupling_point,int
+MMARSF,Masse remorquable sans freinage,Max. towable mass (brakeless trailer),max_towable_mass_brakeless,int
+MMARAF,Masse remorquable avec freinage,Max. towable mass (center-axle trailer),max_towable_mass_center_axle,int
+I4X4,Indicateur 4x4,4x4 Indicator,indicator_4x4,string
+ABS,Indicateur ABS,ABS Indicator,indicator_abs,string
+ASR,Indicateur ASR,ASR Indicator,indicator_asr,string
+PLAAVA,Nombre Places Avant,Number of front seats,number_front_seats,int
+PLAARR,Nombre Places Arrière,Number of back seats,number_back_seats,int
+PLASAV,Nombre Spécifique Avant,Number of specific front seats,number_specific_front_seats,int
+PLASAR,Nombre Spécifique Arrière,Number of specific back seats,number_specific_back_seats,int
+PLADEB,Places Debout,Number of standing places,number_standing_places,int
+PLAASS,Places Assises,Number of sitting places,number_sitting_places,int
+LON,Longueur,Length,length,int
+LAR,Largeur,Width,width,int
+HAU,Hauteur,Height,height,int
+ESSIM,Nombre d'essieux simples,Number of simple axles,number_simple_axles,int
+ESTAN,Nombre d'essieux tandem,Number of tandem axles,number_tandem_axles,int
+ESTRI,Nombre d'essieux tridem,Number of tridem axles,number_tridem_axles,int
+EMPMAX,Empattement Maximal,Wheelbase,wheelbase,int
+LARES1,Largeur voie Essieu 1,Axle track 1,axle_track_1,int
+LARES2,Largeur voie Essieu 2,Axle track 2,axle_track_2,int
+TYPMOT,Type moteur,Engine code,engine_code,string
+CODCRB,Code carburant,Fuel code,fuel_code,string
+LIBCRB,Libellé Carburant,Fuel,fuel,string
+NBRCYL,Nombre de cylindres,Number of cylinders,number_cylinders,int
+PKW,Puissance Maximum,Net power,net_power,float
+CYD,Cylindrée,Engine capacity,engine_capacity,int
+INFOUTI,Info Utilisateur,User information,user_information,string
+INFCO2,Emissions CO2 en g/km,CO2 emissions in g/km (combined),co2_emissions_combined,int
+L100KM,Consommation en l/100km,Fuel consumption in l/100km (combined),fuel_consumption_combined,float
+INFPARTICULE,Emission de particules en g/km,Exhaust emissions particulates (g/km),exhaust_emissions_particulates,float
+INFNOX,Emissions Nox en g/km,Exhaust emissions Nox (g/km),exhaust_emissions_nox,float
+EUNORM,Euronorme,Exhaust emission level,exhaust_emission_level,string
+mWLTP,Masse WLTP,Mass WLTP,mass_wltp,int
+CO2WLTP,Emissions CO2 en g/km (WLTP),CO2 emissions in g/km (WLTP),co2_emissions_wltp,int
+eWLTP,Emissions CO2 éco-inno en g/km (WLTP),CO2 emissions eco-innovation (WLTP),co2_emissions_eco_innovation_wltp,float
+CONSELEC,Consommation d’énergie électrique en Wh/km,Electric energy consumption (Wh/km),electric_energy_consumption,float
+AUTOELEC,Autonomie en mode électrique en km,Electric range (km),electric_range_km,int
+LO,Leasing opérationnel,Operational leasing (1=True 0=False),indicator_operational_leasing,string
