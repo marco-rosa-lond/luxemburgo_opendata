@@ -9,7 +9,7 @@ def main():
     get_monthly_files()
 
     # Step 2 - update database
-    process_and_load_datasets_to_sql()
+    # process_and_load_datasets_to_sql()
 
 
 

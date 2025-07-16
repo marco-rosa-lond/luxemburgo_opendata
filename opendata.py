@@ -8,6 +8,6 @@ datasets = {
     'parc-automobile-du-luxembourg' : 'Parc_Automobile'
 }
 
-column_mapping_path = 'column_mapping.json'
+column_mapping_path = 'column_mapping.csv'
 
 

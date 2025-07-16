@@ -1,10 +1,13 @@
 import csv
 import os
+from dotenv import load_dotenv
 import shutil
 import pandas as pd
 from sqlalchemy import create_engine, text
 from opendata import datasets
 import re
+
+load_dotenv("config.env")
 
 server = os.getenv('DB_SERVER')
 username = os.getenv('DB_USER')
@@ -25,6 +28,7 @@ else:
         f"mssql+pyodbc://{username}:{password}@{server}/{database}"
         f"?driver={driver}"
     )
+
 
 
 engine = create_engine(connection_string,

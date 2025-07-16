@@ -3,8 +3,7 @@ import time
 from opendata import API, datasets, column_mapping_path
 import pandas as pd
 from io import BytesIO
-import python_calamine
-from pandas import read_excel
+# import python_calamine
 
 
 def time_it_took(start_time:float, action:str):
@@ -97,7 +96,7 @@ def download_all_files(resources, destination_folder):
 
         # READ EXCEL
         start = time.time()
-        df = read_excel(BytesIO(content), engine="calamine", dtype='string')
+        df = pd.read_excel(BytesIO(content), engine="calamine", dtype='string')
         time_it_took(start, 'READ EXCEL')
 
         # DROP COLUMNS only if all values are NaN.
