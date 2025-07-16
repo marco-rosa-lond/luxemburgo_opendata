@@ -6,3 +6,4 @@ __pycache__/
 # PyCharm project files
 /idea/
 .idea/
+/Data/
