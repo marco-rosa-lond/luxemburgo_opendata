@@ -4,5 +4,5 @@ __pycache__/
 *.so
 
 # PyCharm project files
+/idea/
 .idea/
-.vscode/
