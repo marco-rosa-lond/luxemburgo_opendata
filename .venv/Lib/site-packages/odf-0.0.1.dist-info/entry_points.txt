@@ -1,0 +1,3 @@
+[console_scripts]
+odf=odf.__main__:main
+

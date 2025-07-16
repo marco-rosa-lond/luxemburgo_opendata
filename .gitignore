@@ -3,9 +3,6 @@ __pycache__/
 *.py[cod]
 *.so
 
-# Virtual environment
-.venv/
-
 # PyCharm project files
 .idea/
 
