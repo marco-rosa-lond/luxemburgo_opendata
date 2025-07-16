@@ -1,6 +1,6 @@
 
 from download import get_monthly_files
-from bulk_insert import update_database
+from bulk_insert import process_and_load_datasets_to_sql
 
 
 def main():
@@ -9,7 +9,7 @@ def main():
     get_monthly_files()
 
     # Step 2 - update database
-    update_database()
+    process_and_load_datasets_to_sql()
 
 
 

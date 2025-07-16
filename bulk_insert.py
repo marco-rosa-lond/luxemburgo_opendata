@@ -101,12 +101,13 @@ def create_sql_table(df: pd.DataFrame, table_name: str):
 
 
 def get_all_csv_files_in_directory(directory_path):
+
     files = [f for f in os.listdir(directory_path) if
              os.path.isfile(os.path.join(directory_path, f))  and f.lower().endswith('.csv')]
 
     return sorted(files, reverse=True)
 
-def import_bcp(file, table_name):
+def bulk_insert_csv_to_sql(file, table_name):
 
     dbo_dir = os.path.join(os.getcwd(), DIRETORIO_DBO)
     errors_dir = os.path.join(os.getcwd(), "Errors")
@@ -155,18 +156,19 @@ def import_bcp(file, table_name):
 
 
 
-def import_to_table(df, table_name, max_rows = LINHAS_POR_CHUNK):
+def prepare_and_bulk_insert_to_sql(df, table_name, max_rows = LINHAS_POR_CHUNK):
 
+    # Convert data types & translate / clean column names
     df = df.convert_dtypes()
     df.columns = df.columns.str.strip().dropna()
     df = convert_to_proper_types(df)
 
+    # Drop and recreate the SQL table
     drop_sql_table(table_name)
     create_sql_table(df, table_name)
     print("Created table {}".format(table_name))
 
-
-    # se o dataset > max_rows cria chunks
+    # Chunking logic for large datasets
     if len(df) > max_rows:
         total_rows = len(df)
         num_files = (total_rows // max_rows) + int(total_rows % max_rows > 0)
@@ -180,25 +182,31 @@ def import_to_table(df, table_name, max_rows = LINHAS_POR_CHUNK):
             filepath = os.path.join(DIRETORIO_DBO, filename)
 
             df_chunk.to_csv(filepath, index=False, sep='|', encoding='utf-8')
-            import_bcp(filename, table_name)
+            bulk_insert_csv_to_sql(filename, table_name)
+
+    # If small enough just import files directly
     else:
         filename = f'{table_name}.csv'
         filepath = os.path.join(DIRETORIO_DBO, filename)
         df.to_csv(filepath, index=False, sep='|', encoding='utf-8')
-        import_bcp(filename, table_name)
+        bulk_insert_csv_to_sql(filename, table_name)
 
 
 
 
-def update_database():
+def process_and_load_datasets_to_sql():
+
+
+    # Create the required directories
     os.makedirs(DIRETORIO_DBO, exist_ok=True)
     os.makedirs("Errors", exist_ok=True)
 
-
+    # Loop all datasets
     for dataset in [f for f in datasets.values()]:
 
         print('\n[UPDATE] database... {}'.format(dataset))
 
+        # Get CSV files from the download folder
         folder_path = 'Downloads/{}/'.format(dataset)
         csv_files = get_all_csv_files_in_directory(folder_path)
         csv_files.sort(reverse=False)
@@ -206,7 +214,7 @@ def update_database():
         if not csv_files:
             raise Exception('No csv files found in {}'.format(folder_path))
 
-
+        # For OPERATION_DELTA Dataset combine all files into a Dataframe and import into the table
         if str.upper(dataset) == 'OPERATIONS_DELTA':
             table_name = dataset
 
@@ -218,9 +226,9 @@ def update_database():
                 file_df['file_name'] = file
                 combined = pd.concat([combined, file_df], ignore_index=True)
 
-            import_to_table(combined, table_name)
+            prepare_and_bulk_insert_to_sql(combined, table_name)
 
-
+        # For PARC_AUTOMOBILE import each file into a table named after the file
         if str.upper(dataset) == 'PARC_AUTOMOBILE':
 
             for file in csv_files:
@@ -228,12 +236,10 @@ def update_database():
                 file_path = folder_path + file
                 df = pd.read_csv(file_path, sep='|', encoding='utf-8')
 
-                import_to_table(df, table_name)
+                prepare_and_bulk_insert_to_sql(df, table_name)
 
-
+    # clean up temporary directory
     shutil.rmtree(DIRETORIO_DBO)
-    print("Directory deleted.")
-
 
 
 
