@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="dc1aff46-8499-4533-b94f-3fcb13208efd" name="Changes" comment="Added SQL Scripts (creates useful dictionaries for dataset)">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/opendata_luxembourg.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bulk_insert.py" beforeDir="false" afterPath="$PROJECT_DIR$/bulk_insert.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+      <option value="repository" />
+    </option>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;marco-rosa-lond&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/marco-rosa-lond/luxemburgo_opendata.git&quot;,
+    &quot;accountId&quot;: &quot;83817897-0328-46dc-b8af-5219b174a7f0&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/download.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2yfvi1Rjov07njSTwiE4hGkoXb6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.bdbv2.executor": "Run",
+    "Python.db.executor": "Run",
+    "Python.download.executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Repos/opendata_luxembourg",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "configurable.group.project",
+    "settings.editor.splitter.proportion": "0.28409094",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Marco\DataGripProjects\PaisesBaixos\PROGRAMS\opendata_luxembourg" />
+      <recent name="C:\Users\Marco\DataGripProjects\PaisesBaixos\PROGRAMS\opendata_luxembourg\Data\Parc_Automobile" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-PY-251.23774.444" />
+        <option value="bundled-python-sdk-890ed5b35930-d9c5bdb153f4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.23774.444" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dc1aff46-8499-4533-b94f-3fcb13208efd" name="Changes" comment="" />
+      <created>1750238565855</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1750238565855</updated>
+      <workItem from="1750238566908" duration="22174000" />
+      <workItem from="1750407002069" duration="4602000" />
+      <workItem from="1750845799469" duration="10357000" />
+      <workItem from="1751272419034" duration="5695000" />
+      <workItem from="1751301134069" duration="1506000" />
+      <workItem from="1752049203530" duration="25616000" />
+      <workItem from="1752135845911" duration="26310000" />
+      <workItem from="1752221288735" duration="26561000" />
+      <workItem from="1752480909826" duration="25611000" />
+      <workItem from="1752512598439" duration="403000" />
+      <workItem from="1752653060619" duration="1116000" />
+      <workItem from="1752654268708" duration="92000" />
+      <workItem from="1752654444806" duration="463000" />
+    </task>
+    <task id="LOCAL-00001" summary="gets all files FROM API ENDPOINT 'https://data.public.lu/api/1':&#10;- parque automovel (registos)&#10;- operacoes de veiculos (export, imnport, new reg, etc..)">
+      <option name="closed" value="true" />
+      <created>1750247605226</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1750247605226</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Added db. Inserts data from xlsx files into database tables operations and parc_auto">
+      <option name="closed" value="true" />
+      <created>1750256107101</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1750256107101</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added main.py. Structured the logic of the program">
+      <option name="closed" value="true" />
+      <created>1750265682231</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1750265682231</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add bulk_insert: &#10;&#10;Rebuilds Database: operations_delta; parc_auto;&#10;- Drops tables &#10;- Creates SQL tables from the dataframe&#10;- Bulk Insert from files&#10;&#10;Combines monthly files into a dataframe (creates sql table)&#10;Chunks the dataframe into smaller pieces if needed &#10;Bulk inserts into the SQL Table">
+      <option name="closed" value="true" />
+      <created>1752507340268</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1752507340268</updated>
+    </task>
+    <task id="LOCAL-00005" summary="added config.env (database configuration variables)">
+      <option name="closed" value="true" />
+      <created>1752511218567</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1752511218567</updated>
+    </task>
+    <task id="LOCAL-00006" summary="renamed from config.py (opendata API / Datasets configurations)">
+      <option name="closed" value="true" />
+      <created>1752511329363</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1752511329363</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Code restructuring">
+      <option name="closed" value="true" />
+      <created>1752511446370</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1752511446370</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Added SQL Scripts (creates useful dictionaries for dataset)">
+      <option name="closed" value="true" />
+      <created>1752511502164</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1752511502164</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="gets all files FROM API ENDPOINT 'https://data.public.lu/api/1':&#10;- parque automovel (registos)&#10;- operacoes de veiculos (export, imnport, new reg, etc..)" />
+    <MESSAGE value="Added db. Inserts data from xlsx files into database tables operations and parc_auto" />
+    <MESSAGE value="Added main.py. Structured the logic of the program" />
+    <MESSAGE value="Add bulk_insert: &#10;&#10;Rebuilds Database: operations_delta; parc_auto;&#10;- Drops tables &#10;- Creates SQL tables from the dataframe&#10;- Bulk Insert from files&#10;&#10;Combines monthly files into a dataframe (creates sql table)&#10;Chunks the dataframe into smaller pieces if needed &#10;Bulk inserts into the SQL Table" />
+    <MESSAGE value="added config.env (database configuration variables)" />
+    <MESSAGE value="renamed from config.py (opendata API / Datasets configurations)" />
+    <MESSAGE value="Code restructuring" />
+    <MESSAGE value="Added SQL Scripts (creates useful dictionaries for dataset)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added SQL Scripts (creates useful dictionaries for dataset)" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/opendata_luxembourg$db.coverage" NAME="db Coverage Results" MODIFIED="1752166491646" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/opendata_luxembourg$main.coverage" NAME="main Coverage Results" MODIFIED="1752505285157" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/opendata_luxembourg$download.coverage" NAME="download Coverage Results" MODIFIED="1752245602348" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/opendata_luxembourg$bdbv2.coverage" NAME="bdbv2 Coverage Results" MODIFIED="1752502050537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

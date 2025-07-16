@@ -111,10 +111,7 @@ def import_bcp(file, table_name):
     dbo_dir = os.path.join(os.getcwd(), DIRETORIO_DBO)
     errors_dir = os.path.join(os.getcwd(), "Errors")
 
-
     new_file_abs_path = os.path.abspath(os.path.join(dbo_dir, file))
-
-
     try:
         sql = f"""
             BULK INSERT {database}.dbo.[{table_name}]
@@ -197,18 +194,17 @@ def update_database():
     os.makedirs(DIRETORIO_DBO, exist_ok=True)
     os.makedirs("Errors", exist_ok=True)
 
+
     for dataset in [f for f in datasets.values()]:
 
         print('\n[UPDATE] database... {}'.format(dataset))
 
-        folder_path = 'Data/{}/'.format(dataset)
+        folder_path = 'Downloads/{}/'.format(dataset)
         csv_files = get_all_csv_files_in_directory(folder_path)
         csv_files.sort(reverse=False)
 
-
         if not csv_files:
             raise Exception('No csv files found in {}'.format(folder_path))
-
 
 
         if str.upper(dataset) == 'OPERATIONS_DELTA':
