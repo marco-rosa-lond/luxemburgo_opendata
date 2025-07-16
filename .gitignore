@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+.venv/
+
+# PyCharm project files
+.idea/
+
+# VS Code settings (optional)
+.vscode/
+
+# Logs
+*.log
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Environment variable files
+.env
+.env.*
+
+# OS files
+#.DS_Store
+#Thumbs.db
+
+# SQLite and local databases
