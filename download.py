@@ -1,9 +1,11 @@
 import requests, os.path, re
 import time
-from opendata import API, datasets, column_mapping_path
 import pandas as pd
 from io import BytesIO
-# import python_calamine
+
+
+
+column_mapping_path = 'column_mapping.csv'
 
 
 def time_it_took(start_time:float, action:str):
@@ -117,24 +119,21 @@ def download_all_files(resources, destination_folder):
 
 
 
-
-
-
-def get_monthly_files():
+def get_monthly_files(api_endpoint, datasets):
     """
     Downloads monthly Excel files for each dataset defined in `datasets`.
     Filters files based on filename pattern and, for some datasets, specific suffixes.
     """
-    for resource, filename_prefix in datasets.items():
+    for  name, resource in datasets.items():
         # Define the filename pattern: e.g., "Parc_Automobile_202507.xlsx"
-        filename_pattern = fr'^{filename_prefix}_\d{{6}}\.xlsx$'
+        filename_pattern = fr'^{name}_\d{{6}}\.xlsx$'
 
         # Create destination folder if it doesn't exist
-        destination_folder = f'Data/{filename_prefix}/'
+        destination_folder = f'Downloads/{name}/'
         os.makedirs(destination_folder, exist_ok=True)
 
         # Fetch dataset metadata from the API
-        response = requests.get(f'{API}/datasets/{resource}/')
+        response = requests.get(f'{api_endpoint}/datasets/{resource}/')
         response.raise_for_status()
         resource_list = response.json().get('resources', [])
 
@@ -144,7 +143,7 @@ def get_monthly_files():
         ]
 
         # If it's the Parc_Automobile dataset, only include files ending with '12.xlsx'
-        if filename_prefix == 'Parc_Automobile':
+        if name == 'Parc_Automobile':
             matching_files = [
                 r for r in matching_files if r['title'].endswith('12.xlsx')
             ]
@@ -153,7 +152,7 @@ def get_monthly_files():
         matching_files.sort(key=lambda x: x['published'], reverse=True)
 
         if not matching_files:
-            raise Exception(f'No resources found for {filename_prefix}')
+            raise Exception(f'No resources found for {name}')
 
         # Download files
         download_all_files(matching_files, destination_folder)

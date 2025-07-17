@@ -7,8 +7,6 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
-from opendata import datasets
-
 load_dotenv("config.env")
 
 server = os.getenv('DB_SERVER')
@@ -200,14 +198,14 @@ def prepare_and_bulk_insert_to_sql(df, table_name, max_rows = LINHAS_POR_CHUNK):
 
 
 
-def process_and_load_datasets_to_sql():
+def process_and_load_datasets_to_sql(datasets):
 
     # Create the required directories
     os.makedirs(DIRETORIO_DBO, exist_ok=True)
     os.makedirs("Errors", exist_ok=True)
 
     # Loop all datasets
-    for dataset in [f for f in datasets.values()]:
+    for dataset in datasets:
 
         print('\n[UPDATE] database... {}'.format(dataset))
 
