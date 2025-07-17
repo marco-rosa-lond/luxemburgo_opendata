@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# PyCharm project files
+.idea/
+/Downloads/
+config.env
