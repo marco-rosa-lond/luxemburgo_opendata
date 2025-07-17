@@ -204,49 +204,48 @@ def process_and_load_datasets_to_sql(datasets):
     os.makedirs(DIRETORIO_DBO, exist_ok=True)
     os.makedirs("Errors", exist_ok=True)
 
-    # Loop all datasets
-    for dataset in datasets:
+    try:
+        # Loop all datasets
+        for dataset in datasets:
 
-        print('\n[UPDATE] database... {}'.format(dataset))
+            # Get CSV files from the download folder
+            folder_path = 'Downloads/{}/'.format(dataset)
+            csv_files = get_all_csv_files_in_directory(folder_path)
+            csv_files.sort(reverse=False)
 
-        # Get CSV files from the download folder
-        folder_path = 'Downloads/{}/'.format(dataset)
-        csv_files = get_all_csv_files_in_directory(folder_path)
-        csv_files.sort(reverse=False)
+            if not csv_files:
+                raise Exception('No csv files found in {}'.format(folder_path))
 
-        if not csv_files:
-            raise Exception('No csv files found in {}'.format(folder_path))
+            print('\n[UPDATE] database... {}'.format(dataset))
 
-        # For OPERATION_DELTA Dataset combine all files into a Dataframe and import into the table
-        if str.upper(dataset) == 'OPERATIONS_DELTA':
-            table_name = dataset
+            # For OPERATION_DELTA Dataset combine all files into a Dataframe and import into the table
+            if str.upper(dataset) == 'OPERATIONS_DELTA':
+                table_name = dataset
 
-            combined = pd.DataFrame()
+                combined = pd.DataFrame()
 
-            for i, file in enumerate(sorted(csv_files)):
-                file_path = folder_path + file
-                file_df = pd.read_csv(file_path, sep='|',  encoding='utf-8')
-                file_df['file_name'] = file
-                combined = pd.concat([combined, file_df], ignore_index=True)
+                for i, file in enumerate(sorted(csv_files)):
+                    file_path = folder_path + file
+                    file_df = pd.read_csv(file_path, sep='|',  encoding='utf-8')
+                    file_df['file_name'] = file
+                    combined = pd.concat([combined, file_df], ignore_index=True)
 
-            prepare_and_bulk_insert_to_sql(combined, table_name)
+                prepare_and_bulk_insert_to_sql(combined, table_name)
 
-        # For PARC_AUTOMOBILE import each file into a table named after the file
-        if str.upper(dataset) == 'PARC_AUTOMOBILE':
+            # For PARC_AUTOMOBILE import each file into a table named after the file
+            if str.upper(dataset) == 'PARC_AUTOMOBILE':
 
-            for file in csv_files:
-                table_name = file.replace('.csv', '')
-                file_path = folder_path + file
-                df = pd.read_csv(file_path, sep='|', encoding='utf-8')
+                for file in csv_files:
+                    table_name = file.replace('.csv', '')
+                    file_path = folder_path + file
+                    df = pd.read_csv(file_path, sep='|', encoding='utf-8')
+                    prepare_and_bulk_insert_to_sql(df, table_name)
 
-                prepare_and_bulk_insert_to_sql(df, table_name)
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
-    # clean up temporary directory
-    shutil.rmtree(DIRETORIO_DBO)
-
-
-
-
-engine.dispose()
-
-
+    finally:
+        # Cleanup in all cases
+        if os.path.exists(DIRETORIO_DBO):
+            shutil.rmtree(DIRETORIO_DBO)
+        engine.dispose()
