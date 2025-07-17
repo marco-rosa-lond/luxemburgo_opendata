@@ -1,11 +1,13 @@
 import csv
 import os
-from dotenv import load_dotenv
+import re
 import shutil
 import pandas as pd
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
+
 from opendata import datasets
-import re
 
 load_dotenv("config.env")
 
@@ -199,7 +201,6 @@ def prepare_and_bulk_insert_to_sql(df, table_name, max_rows = LINHAS_POR_CHUNK):
 
 
 def process_and_load_datasets_to_sql():
-
 
     # Create the required directories
     os.makedirs(DIRETORIO_DBO, exist_ok=True)
