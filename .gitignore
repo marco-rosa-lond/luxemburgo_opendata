@@ -5,5 +5,8 @@ __pycache__/
 
 # PyCharm project files
 .idea/
+
+# Project files
 /Downloads/
+Downloads.zip
 config.env
