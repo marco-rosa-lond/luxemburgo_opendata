@@ -47,28 +47,32 @@ def get_backup_progress(cursor):
 
 
 def ftp_save_backup_file(file_abs_path):
-    ftp_handler = FtpHandler()
-
     bak_file = os.path.basename(file_abs_path)
-
-    print( f'Sending backup file to {ftp_path}/{bak_file}')
+    print(f'Sending backup file to {ftp_path}/{bak_file}')
     input('Continue?')
 
-    with open(file_abs_path, "rb") as bak_file_bin:
-        ftp_handler.send_to_ftp(
-            zip_data=bak_file_bin,
-            dest_dir=ftp_path,
-            filename=bak_file
-        )
 
-    ftp_handler.close()
-    print("BACKUP SENT TO FTP")
+    ftp_handler = FtpHandler()
+    try:
+
+        with open(file_abs_path, "rb") as bak_file_bin:
+            ftp_handler.send_to_ftp(
+                zip_data=bak_file_bin,
+                dest_dir=ftp_path,
+                filename=bak_file
+            )
+
+        print("BACKUP SENT TO FTP")
+    except Exception as e:
+        print(e)
+
+    finally:
+        ftp_handler.close()
 
 
 def backup_and_send_with_ftp():
 
     conn = pyodbc.connect(conn_str, autocommit=True)
-
     os.makedirs(backup_dir, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -77,19 +81,26 @@ def backup_and_send_with_ftp():
 
     stats = '5'
 
-    with conn.cursor() as cursor :
+    try:
+        with conn.cursor() as cursor:
 
-        sql = f"""
-                BACKUP DATABASE [{database}] TO DISK = N'{file_abs_path}'
-                WITH COPY_ONLY, NOFORMAT, SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = {stats}
-            """
-        cursor.execute(sql)
-        get_backup_progress(cursor)
+            sql = f"""
+                    BACKUP DATABASE [{database}] TO DISK = N'{file_abs_path}'
+                    WITH COPY_ONLY, NOFORMAT, SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = {stats}
+                """
+            cursor.execute(sql)
+            get_backup_progress(cursor)
 
-    conn.close()
+        conn.close()
 
-    ftp_save_backup_file(file_abs_path)
-    os.remove(file_abs_path)
+        ftp_save_backup_file(file_abs_path)
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
+    finally:
+        os.remove(file_abs_path)
+        conn.close()
 
 
 
