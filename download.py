@@ -1,25 +1,11 @@
 import requests, os.path, re
-import time
-import pandas as pd
 from io import BytesIO
-import zipfile
-import shutil
+from utils import *
 
 column_mapping_path = 'column_mapping.csv'
 
-
-def time_it_took(start_time:float, action:str):
-    end = time.time()
-    print(f"{action} took {end - start_time:.2f} seconds")
-
-
-def get_column_mapping(mapping_file = column_mapping_path):
-    return pd.read_csv(mapping_file)
-
-
-
 def map_columns(df ):
-    csv_mapping = get_column_mapping()
+    csv_mapping = get_column_mapping(column_mapping_path)
 
     column_mapping = dict(zip(csv_mapping['original_name'], csv_mapping['new_name']))
     not_mapped_cols =  set(df.columns) - set(column_mapping.keys())
@@ -49,8 +35,6 @@ def map_columns(df ):
 
 
 
-
-
 def download_file(url: str)-> bytes:
     print('\nDownloading: ' + url)
     content = None
@@ -76,11 +60,10 @@ def download_file(url: str)-> bytes:
     return content
 
 
-
-
 def download_all_files(resources, destination_folder):
 
     for res in resources:
+
 
         file_mame  = res['title'].replace('.xlsx', '.csv')
         file_path = os.path.join(destination_folder, file_mame)
@@ -119,65 +102,56 @@ def download_all_files(resources, destination_folder):
 
 
 
-def get_monthly_files(api_endpoint, datasets):
-    """
-    Downloads monthly Excel files for each dataset defined in `datasets`.
-    Filters files based on filename pattern and, for some datasets, specific suffixes.
-    """
-    zip_path = "Downloads.zip"
-    dir_path = "Downloads"
+def get_file_list(api_endpoint, name, resource):
 
-    if os.path.exists(zip_path):
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(dir_path)
-        shutil.rmtree(zip_path)
-        print(f"Unzipped: {zip_path}")
+    # Define the filename pattern: e.g., "Parc_Automobile_202507.xlsx"
+    filename_pattern = fr'^{name}_\d{{6}}\.xlsx$'
+    # Fetch dataset metadata from the API
+    response = requests.get(f'{api_endpoint}/datasets/{resource}/')
+    response.raise_for_status()
+    resource_list = response.json().get('resources', [])
 
+    # Filter resources that match the filename pattern
+    matching_files = [
+        r for r in resource_list if re.search(filename_pattern, r['title'])
+    ]
+
+
+    # Sort resources by publication date, descending
+    # matching_files.sort(key=lambda x: x['published'], reverse=True)
+
+    if not matching_files:
+        raise Exception(f'No resources found for {name}')
+
+    return matching_files
+
+
+
+def get_monthly_files(api_endpoint, name, resource):
+
+    downloads_dir = 'downloads'
     try:
+        # Create destination folder if it doesn't exist
+        destination_folder = f'{downloads_dir}/{name}/'
+        os.makedirs(destination_folder, exist_ok=True)
 
-        for name, resource in datasets.items():
-            # Define the filename pattern: e.g., "Parc_Automobile_202507.xlsx"
-            filename_pattern = fr'^{name}_\d{{6}}\.xlsx$'
+        matching_files = get_file_list(api_endpoint, name, resource)
 
-            # Create destination folder if it doesn't exist
-            destination_folder = f'Downloads/{name}/'
-            os.makedirs(destination_folder, exist_ok=True)
-
-            # Fetch dataset metadata from the API
-            response = requests.get(f'{api_endpoint}/datasets/{resource}/')
-            response.raise_for_status()
-            resource_list = response.json().get('resources', [])
-
-            # Filter resources that match the filename pattern
+        # If it's the Parc_Automobile dataset, only include files ending with '12.xlsx'
+        if name == 'Parc_Automobile':
             matching_files = [
-                r for r in resource_list if re.search(filename_pattern, r['title'])
+                r for r in matching_files if r['title'].endswith('12.xlsx')
             ]
 
-            # If it's the Parc_Automobile dataset, only include files ending with '12.xlsx'
-            if name == 'Parc_Automobile':
-                matching_files = [
-                    r for r in matching_files if r['title'].endswith('12.xlsx')
-                ]
 
-            # Sort resources by publication date, descending
-            matching_files.sort(key=lambda x: x['published'], reverse=True)
 
-            if not matching_files:
-                raise Exception(f'No resources found for {name}')
+        # Download files
+        download_all_files(matching_files, destination_folder)
 
-            # Download files
-            download_all_files(matching_files, destination_folder)
-
-        print('\nAll Files Downloaded')
 
     except Exception as e:
         print(e)
 
-    finally:
-        if os.path.exists(dir_path):
-            shutil.make_archive(zip_path.replace('.zip', ''), 'zip', dir_path)
-            print(f"Zipped back to: {zip_path}")
-            shutil.rmtree(dir_path)  # Optional: remove extracted dir
 
 
 

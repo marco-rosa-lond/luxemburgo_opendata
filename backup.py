@@ -1,33 +1,14 @@
 from datetime import datetime
 import re
-import pyodbc
-import os
-from dotenv import load_dotenv
 from tqdm import tqdm
 from ftp import FtpHandler
-
-load_dotenv("config.env")
-
-server = os.getenv('DB_SERVER')
-username = os.getenv('DB_USER')
-password = os.getenv('DB_PASS')
-database = os.getenv('DB_NAME')
-driver = "ODBC+Driver+17+for+SQL+Server"
-
-
-conn_str = (
-    "DRIVER={ODBC Driver 17 for SQL Server};"
-    f"SERVER={server};"
-    f"DATABASE={database};"
-    "Trusted_Connection=yes;"
-)
-
+from utils import *
+from database import get_database_name, get_connection_string, pyodbc
 
 backup_dir = "DB_BACKUP"
-ftp_path = '/FILES/__DATASET__/BACKUPS'
 
 
-def get_backup_progress(cursor):
+def display_backup_progress(cursor):
     progress = tqdm(total=100, desc="Backup Progress")
     last_percent = 0
 
@@ -42,41 +23,27 @@ def get_backup_progress(cursor):
                     last_percent = percent
 
         cursor.messages.clear()
-
     progress.close()
 
 
-def ftp_save_backup_file(file_abs_path):
-    bak_file = os.path.basename(file_abs_path)
-    print(f'Sending backup file to {ftp_path}/{bak_file}')
-    input('Continue?')
-
-
+def ftp_save_backup_file(bak_abs_path, ftp_path):
+    print(f'\nUploading backup file to {ftp_path}')
     ftp_handler = FtpHandler()
-    try:
-
-        with open(file_abs_path, "rb") as bak_file_bin:
-            ftp_handler.send_to_ftp(
-                zip_data=bak_file_bin,
-                dest_dir=ftp_path,
-                filename=bak_file
-            )
-
-        print("BACKUP SENT TO FTP")
-    except Exception as e:
-        print(e)
-
-    finally:
-        ftp_handler.close()
+    ftp_handler.send_to_ftp(bak_abs_path, ftp_path)
 
 
-def backup_and_send_with_ftp():
 
-    conn = pyodbc.connect(conn_str, autocommit=True)
+def backup_and_send_with_ftp(ftp_path):
     os.makedirs(backup_dir, exist_ok=True)
+    database_name = get_database_name()
+
+    conn = pyodbc.connect(
+        get_connection_string("pyodbc", db_master=True),
+        autocommit=True
+    )
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    bak_file = f"{database}_{timestamp}.bak"
+    bak_file = f"{database_name}_{timestamp}.bak"
     file_abs_path = os.path.abspath(os.path.join(backup_dir, bak_file))
 
     stats = '5'
@@ -85,15 +52,12 @@ def backup_and_send_with_ftp():
         with conn.cursor() as cursor:
 
             sql = f"""
-                    BACKUP DATABASE [{database}] TO DISK = N'{file_abs_path}'
+                    BACKUP DATABASE [{database_name}] TO DISK = N'{file_abs_path}'
                     WITH COPY_ONLY, NOFORMAT, SKIP, NOREWIND, NOUNLOAD, COMPRESSION, STATS = {stats}
                 """
             cursor.execute(sql)
-            get_backup_progress(cursor)
-
-        conn.close()
-
-        ftp_save_backup_file(file_abs_path)
+            display_backup_progress(cursor)
+            print(f"Backup of {database_name} database completed")
 
     except Exception as e:
         print(f"Error occurred: {e}")
@@ -102,5 +66,6 @@ def backup_and_send_with_ftp():
         os.remove(file_abs_path)
         conn.close()
 
+    # ftp_save_backup_file(file_abs_path, ftp_path)
 
 
