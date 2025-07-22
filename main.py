@@ -27,14 +27,15 @@ def main():
     sql_manager = SQLServerManager()
 
     try:
-
+        # Re-create database
         sql_manager.recreate_database()
-        input('press')
+
         for name, resource in datasets.items():
-            print(f'\n{name.upper()}...')
+
             create_directory(downloads_dir)
             create_directory(f'{downloads_dir}/{name}/')
 
+            print(f'\n{name.upper()}...')
             # Step 1 - download files
             download_files( API, name, resource, downloads_dir )
 
@@ -45,7 +46,7 @@ def main():
         create_directory(backup_dir)
         bak_file_path = sql_manager.backup_database(backup_dir)
 
-        # Upload Backup to ftp path
+        # Step 4 - Upload Backup to ftp path
         ftp_handler = FtpHandler()
         ftp_handler.send_to_ftp(bak_file_path, ftp_path)
 
