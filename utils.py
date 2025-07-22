@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 def get_all_csv_files_in_directory(directory_path):
-
     files = [f for f in os.listdir(directory_path) if
              os.path.isfile(os.path.join(directory_path, f))  and f.lower().endswith('.csv')]
     return sorted(files, reverse=True)
@@ -20,6 +19,10 @@ def drop_directory(folder):
     if os.path.exists(folder):
         shutil.rmtree(folder)
 
+def delete_empty_file(file_path):
+    if (os.path.exists(file_path)
+            and os.path.getsize(file_path) == 0):
+        os.remove(file_path)
 
 def count_file_rows(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -32,38 +35,16 @@ def time_it_took(start_time: float, action: str):
 def get_column_mapping(mapping_file):
     return pd.read_csv(mapping_file)
 
+def map_column_names(df, mapping_file):
+    csv_mapping = get_column_mapping(mapping_file)
 
-def infer_sql_type_from_dtype(serie: pd.Series) -> str:
+    column_mapping = dict(zip(csv_mapping['original_name'], csv_mapping['new_name']))
+    not_mapped_cols =  set(df.columns) - set(column_mapping.keys())
+    if not_mapped_cols:
+        print('Update column_mapping.csv')
+        raise ValueError(f"Mapping of columns: {not_mapped_cols}")
 
-    pandas_to_sql = {
-        'int8': 'INT',
-        'int16': 'INT',
-        'int32': 'INT',
-        'int64': 'INT',
-        'float32': 'FLOAT',
-        'float64': 'FLOAT'
-    }
-    dtype = str(serie.dtype).lower()
-    max_len = serie.astype(str).str.len().max()
-
-    tipo = pandas_to_sql.get(dtype, f'VARCHAR({max_len})')
-
-    if tipo == f'VARCHAR({max_len})':
-        if serie.apply(lambda x: any(ord(c) > 127 for c in str(x))).any():
-            tipo = f'NVARCHAR({max_len})'
-
-    return tipo
-
-
-def generate_create_table(df: pd.DataFrame, nome_tabela):
-    nome_tabela = nome_tabela.replace(".csv", "")
-    sql_cols = []
-    for col in df.columns:
-        tipo = infer_sql_type_from_dtype(df[col])
-        sql_cols.append(f"[{col}] {tipo}")
-    columns_sql_str = ",\n    ".join(sql_cols)
-    return f"CREATE TABLE {nome_tabela} (\n {columns_sql_str} \n);"
-
+    return df.rename(columns=column_mapping)
 
 
 def unzip_file(zip_path: Path):

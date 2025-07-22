@@ -1,11 +1,10 @@
-import zipfile
 
-from database import drop_database, create_database
-from download import get_monthly_files
-from bulk_insert import process_and_load_datasets_to_sql
-from backup import backup_and_send_with_ftp
-from utils import unzip_file, zip_file, Path
+from SQLServer import SQLServerManager
+from ftp import FtpHandler
+from bulk_insert import process_and_load_to_sql
+from utils import unzip_file, zip_file, create_directory
 
+from download import download_files
 
 # [API]
 API = 'https://data.public.lu/api/1'
@@ -16,30 +15,42 @@ datasets = {
     'Parc_Automobile' : 'parc-automobile-du-luxembourg'
 }
 
+downloads_dir = 'downloads'
+backup_dir = "backups"
+
 ftp_path = '/FILES/__DATASET__/BACKUPS'
-download_dir = 'downloads'
 
 def main():
-    create_database()
-    unzip_file(Path( download_dir + '.zip'))
+
+    # unzip_file(Path( downloads_dir + '.zip'))
+
+    sql_manager = SQLServerManager()
 
     try:
-        # Step 1 - download files
+
+        sql_manager.recreate_database()
+        input('press')
         for name, resource in datasets.items():
-            get_monthly_files( API, name, resource)
-        print('\nAll Files Downloaded')
+            print(f'\n{name.upper()}...')
+            create_directory(downloads_dir)
+            create_directory(f'{downloads_dir}/{name}/')
 
+            # Step 1 - download files
+            download_files( API, name, resource, downloads_dir )
 
-        # Step 2 - update database
-        process_and_load_datasets_to_sql(datasets.keys())
+            # Step 2 - update database
+            process_and_load_to_sql( downloads_dir, name)
 
-        # Step 3 - Backup the database to ftp destination
-        backup_and_send_with_ftp(ftp_path)
+        # Step 3 - Backup the database
+        create_directory(backup_dir)
+        bak_file_path = sql_manager.backup_database(backup_dir)
+
+        # Upload Backup to ftp path
+        ftp_handler = FtpHandler()
+        ftp_handler.send_to_ftp(bak_file_path, ftp_path)
 
     finally:
-        drop_database()
-        zip_file(Path(download_dir))
-
+        sql_manager.drop_database()
 
 
 

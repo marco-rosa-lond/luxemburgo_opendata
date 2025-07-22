@@ -1,46 +1,15 @@
-import requests, os.path, re
 from io import BytesIO
 from utils import *
+import requests
+import re
 
 column_mapping_path = 'column_mapping.csv'
 
-def map_columns(df ):
-    csv_mapping = get_column_mapping(column_mapping_path)
-
-    column_mapping = dict(zip(csv_mapping['original_name'], csv_mapping['new_name']))
-    not_mapped_cols =  set(df.columns) - set(column_mapping.keys())
-    if not_mapped_cols:
-        raise ValueError(f"Mapping of columns: {not_mapped_cols}")
-
-
-    type_mapping = dict(zip(csv_mapping['original_name'], csv_mapping['type']))
-
-    for col in df.columns.tolist():
-        tipo = type_mapping.get(col)
-
-        if tipo == 'int':
-            df[col] = pd.to_numeric(df[col], errors='coerce').dropna() \
-                .astype(int) \
-                .astype(str)
-
-        if tipo == 'float':
-            df[col] = pd.to_numeric(df[col], errors='coerce').dropna() \
-                .astype(float) \
-
-        if 'date' in col:
-            df[col] = pd.to_datetime(df[col], errors='coerce').dropna() \
-
-
-    return df.rename(columns=column_mapping)
-
-
-
-def download_file(url: str)-> bytes:
+def download(url: str)-> bytes:
     print('\nDownloading: ' + url)
     content = None
     try:
         start = time.time()
-
         s = requests.get(url)
         s.raise_for_status()
         content = s.content
@@ -56,102 +25,63 @@ def download_file(url: str)-> bytes:
         print("Timeout Error:", et)
     except requests.exceptions.RequestException as err:
         print("Unexpected Error:", err)
-
     return content
 
 
-def download_all_files(resources, destination_folder):
+def download_files(api_endpoint, name, resource, downloads_dir):
 
-    for res in resources:
+    destination_folder = f'{downloads_dir}/{name}/'
+    create_directory(destination_folder)
 
-
-        file_mame  = res['title'].replace('.xlsx', '.csv')
-        file_path = os.path.join(destination_folder, file_mame)
-
-        #SKIP IF FILE ALREADY EXISTS
-        if os.path.exists(file_path):
-            if os.path.getsize(file_path) == 0:
-                os.remove(file_path)
-            else:
-                print('File already exists: ' + res['title'])
-                continue
-
-        # DOWNLOAD
-        content = download_file(res['url'])
-
-        # READ EXCEL
-        start = time.time()
-        df = pd.read_excel(BytesIO(content), engine="calamine", dtype='string')
-        time_it_took(start, 'READ EXCEL')
-
-        # DROP COLUMNS only if all values are NaN.
-        df = df.dropna(axis=1, how='all')
-
-        # MAPEAR NOMES DAS COLUNAS & COLUMN TYPES
-        df = map_columns(df)
-
-        # FILTRAR VEICULOS LIGEIROS
-        df = df[df['european_category_code'].isin(['M1', 'M1G', 'N1', 'N1G'])]
-
-        # CREATE CSV FILE
-        df.to_csv(str(file_path), index=False, encoding='utf-8', sep='|')
-
-        if os.path.getsize(file_path) == 0:
-            os.remove(file_path)
-            raise Exception('File was not downloaded')
-
-
-
-def get_file_list(api_endpoint, name, resource):
-
-    # Define the filename pattern: e.g., "Parc_Automobile_202507.xlsx"
-    filename_pattern = fr'^{name}_\d{{6}}\.xlsx$'
-    # Fetch dataset metadata from the API
+    # get datasets files
     response = requests.get(f'{api_endpoint}/datasets/{resource}/')
     response.raise_for_status()
     resource_list = response.json().get('resources', [])
 
-    # Filter resources that match the filename pattern
-    matching_files = [
-        r for r in resource_list if re.search(filename_pattern, r['title'])
-    ]
+    # Filter files that match the filename pattern
+    filename_pattern = fr'^{name}_\d{{6}}\.xlsx$'
+    matching_files = [ r for r in resource_list
+                       if re.search(filename_pattern, r['title'])]
 
 
-    # Sort resources by publication date, descending
-    # matching_files.sort(key=lambda x: x['published'], reverse=True)
+    if name == 'Parc_Automobile':
+        matching_files = [r for r in matching_files
+                          if r['title'].endswith('12.xlsx')]
 
     if not matching_files:
         raise Exception(f'No resources found for {name}')
 
-    return matching_files
 
+    for resource in matching_files:
+        url = resource.get('url')
+        title = resource.get('title')
 
+        file_name = title.replace('.xlsx', '.csv')
+        file_path = os.path.join(destination_folder, file_name)
 
-def get_monthly_files(api_endpoint, name, resource):
+        # SKIP IF FILE ALREADY EXISTS
 
-    downloads_dir = 'downloads'
-    try:
-        # Create destination folder if it doesn't exist
-        destination_folder = f'{downloads_dir}/{name}/'
-        os.makedirs(destination_folder, exist_ok=True)
+        delete_empty_file(file_path)
 
-        matching_files = get_file_list(api_endpoint, name, resource)
+        if os.path.exists(file_path):
+            print('File already exists: ' + title)
+            continue
 
-        # If it's the Parc_Automobile dataset, only include files ending with '12.xlsx'
-        if name == 'Parc_Automobile':
-            matching_files = [
-                r for r in matching_files if r['title'].endswith('12.xlsx')
-            ]
+        content = download(url)
 
+        df = pd.read_excel(BytesIO(content), engine="calamine")
+        df = df.dropna(axis=1, how='all')
 
+        # rename columns to english
+        df = map_column_names(df, column_mapping_path)
 
-        # Download files
-        download_all_files(matching_files, destination_folder)
+        # filter only M1 & N1 vehicles
+        df = df[df['european_category_code'].isin(['M1', 'M1G', 'N1', 'N1G'])]
 
+        # convert data types and clean data
+        df = df.convert_dtypes()
+        df.columns = df.columns.str.strip().dropna()
 
-    except Exception as e:
-        print(e)
-
-
-
+        df.to_csv(str(file_path), index=False, encoding='utf-8', sep='|')
+        delete_empty_file(file_path)
 
